@@ -21,7 +21,7 @@ data=data1.sort_values(by=['id']).reset_index()  # resetting according to the 'i
 
 i=12  # intialzing i for loop 
 
-# while loop for correcting x values # Unwrapping periodic boundary conditions by indentifying locations with wrapped coordinates
+# while loop for correcting x values # Unwrapping periodic boundary conditions by indentifying locations with wrapped coordinates (x and y direction)
 # Consecutive particles in a chain will have distance compared to intial bond length (here 1) otherwise >> intial bond length
 while (i>1):
   data['xdiff']=data['x']-np.roll(data['x'],1) # True x2-x1 (x coordinates of consecutive particles of a chain)
@@ -43,52 +43,4 @@ while (i>1):
   i=len(my_query_index)
   print(i)
   print(my_query_index )
-i=15
 
-while (i>1):
-  data['xdiff']=data['x']-np.roll(data['x'],1)
-  data['xpdiff']=data['x'].abs()-np.roll(data['x'].abs(),1)
-  data['ydiff']=data['y']-np.roll(data['y'],1)
-  data['ypdiff']=data['y'].abs()-np.roll(data['y'].abs(),1)
-  data['zdiff']=data['z']-np.roll(data['z'],1)
-  data['zpdiff']=data['z'].abs()-np.roll(data['z'].abs(),1)
-  data['sqxdiff']=data['xdiff']*data['xdiff']
-  data['sqydiff']=data['ydiff']*data['ydiff']
-  data['sqzdiff']=data['zdiff']*data['zdiff']
-  data['leg']=data['sqzdiff']/(data['sqxdiff']+data['sqydiff']+data['sqzdiff'])
-  data['ycorr']=data['y']
-  my_query_index = data.query('(ypdiff> 15) & (abs(y)>15) & (id%500 !=1)').index
-  data.iloc[my_query_index,16]=data.iloc[my_query_index,3]-10.3786
-  data['y']=data['ycorr']
-  i=len(my_query_index)
-  print(i)
-  
-  print(my_query_index)
-total_rows=data['x'].count
-#(0,total rows-chain length,no. of chains)
-data2=data.drop(dr) # dropping the tethered points spuriaus leg value
-newTotrows=data2['x'].count## No use justto count rows
-#print(data)
-#print(data2)
-#print(total_rows)
-#print(newTotrows)
-legvalue=(3*data2['leg'].mean()-1)/2# calculating leg values
-#print(legvalue)
-## Binning starting for leg calculation
-def days_late_xform(dl):
-    import math
-    return (math.floor((dl-3.4)/20))
-## Binning end
-data2['Bin'] = data['z'].map(days_late_xform)
-data2sort=data2.sort_values('z') # sorting
-#print(data2sort)
-legspan=(3*data2sort.groupby(['Bin']).mean()-1)/2 #binning and calculating
-#print(legspan)
-legspan.to_excel('0p78.xlsx')
-#data.to_csv('sorted,xls')
-
-#print(data)
-data.to_csv('20_f0p78_data')
-def round_down(n, decimals=0):
-    multiplier = 10 ** decimals
-    return math.floor(n * multiplier) / multiplier
